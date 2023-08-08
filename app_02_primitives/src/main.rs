@@ -1,3 +1,6 @@
+use std::fmt;
+use std::mem;
+
 macro_rules! print_title {
     ($text:expr, $width:expr) => {
         println!("{:*<width$} {text} {:*<width$}", "", "", text=$text, width=$width);
@@ -78,8 +81,69 @@ fn test_literals_operators() {
     println!("one_million: {one_million}");
 }
 
-fn test_tuples() {
+fn swap(pair: (u32, bool)) -> (bool, u32) {
+    /* Unpacking */
+    let (val_u32, val_bool) = pair;
 
+    /* returned value is a tuple */
+    (val_bool, val_u32)
+}
+
+fn test_tuples() {
+    let to_swap = (0xFF, false);
+    let swapped = swap(to_swap);
+
+    println!("to_swap: {to_swap:?}, swapped: {swapped:?}");
+}
+
+#[derive(Debug)]
+struct Matrix2x2(u32, u32, u32, u32);
+
+impl fmt::Display for Matrix2x2 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "( {} {} )\n", self.0, self.1)?;
+        write!(f, "( {} {} )", self.2, self.3)
+    }
+}
+
+fn transpose_matrix_2x2(matrix:Matrix2x2) -> Matrix2x2 {
+    Matrix2x2(matrix.0, matrix.2, matrix.1, matrix.3)
+}
+
+fn activity_exercise() {
+    let matrix = Matrix2x2(1,2,3,4);
+    println!("Matrix is:\n{matrix}\n");
+
+    let transpose = transpose_matrix_2x2(matrix);
+    println!("Transpose is:\n{transpose}");
+}
+
+fn test_arrays_and_slices() {
+    let arr = [1,2,3,4,5];
+    let zeros = [0; 50];
+
+    let arr_2:[i8; 5] = [1,2,3,4,5];
+    let zeros_2:[i8; 50] = [0; 50];
+
+    println!("arr has {arr_len} elements, zeros has {zeros_len} elements", arr_len=arr.len(), zeros_len=zeros.len());
+    println!("arr_2 has {arr_2_len} elements, zeros_2 has {zeros_2_len} elements", arr_2_len=arr_2.len(), zeros_2_len=zeros_2.len());
+
+    println!("sizeof(arr) is {arr_size}, sizeof(zero) is {zero_size}", arr_size=mem::size_of_val(&arr), zero_size=mem::size_of_val(&zeros));
+    println!("sizeof(arr_2) is {arr_2_size}, sizeof(zeros_2) is {zeros_2_size}", arr_2_size=mem::size_of_val(&arr_2), zeros_2_size=mem::size_of_val(&zeros_2));
+
+    let target = [0,1,2,3,4,5,6,7,8,9,10];
+    let slice = &target[3..7];
+    println!("Slice of target is {slice:?}");
+
+    println!("5th element of target is {target_5}", target_5=target[5]);
+
+    for i in 0..target.len()+1 {
+        let result: Option<&i32> = target.get(i);
+        match result {
+            Some(target_val) => print!(" |{i}: {target_val}"),
+            None => println!("\nIndex Out of Bounds {i}")
+        }
+    }
 }
 
 fn main() {
@@ -98,5 +162,13 @@ fn main() {
 
     print_title!("test_tuples()", 15);
     test_tuples();
+    println!("\n");
+
+    print_title!("activity_exercise()", 15);
+    activity_exercise();
+    println!("\n");
+
+    print_title!("test_arrays_and_slices()", 15);
+    test_arrays_and_slices();
     println!("\n");
 }
